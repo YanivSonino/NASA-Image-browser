@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="js/register.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+
+    <% if (typeof alert != 'undefined'){ %>
+        <% alert.forEach(function (error){ %>
+            <div class="alert alert-warning alet-dismissible fade show" role="alert">
+                <%= error.msg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <%})%>
+    <%}%>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Register</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <form id="form" action="/register" method="post">
+                    <div class="form-group mb-3">
+                        <label for="FirstName" class="form-label">Name:</label>
+                        <input  type="text" class="form-control" id="FirstName" name="FirstName" pattern="[A-Za-z]+" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="LastName" class="form-label">Last Name:</label>
+                        <input type="text" class="form-control" id="LastName" name="LastName" pattern="[A-Za-z]+" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="Email" class="form-label">Email:</label>
+                        <input type="email" class="form-control" id="Email" name="Email" required>
+                    </div>
+                    <input type="submit" id="Send" class="btn btn-primary rounded" value="Send">
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
