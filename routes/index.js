@@ -17,7 +17,7 @@ router.post('/', ((req, res, next) =>{
 
   //Validate that the cookie of the time to register is not expired and if so, save the user in the data base.
   if(!RegisterTime){
-    res.render('register', {title: "Mars Images Browser", jsPath: "/js/register.js"});
+    res.render('register', {title: "Mars Images Browser", jsPath: "/js/register.js", massage:"You running out of time, Try Again."});
   }
   else{
     let user = new Users(req.body.FirstName, req.body.LastName, req.body.Email, req.body.Password);
