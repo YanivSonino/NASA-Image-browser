@@ -1,14 +1,20 @@
-let createError = require('http-errors');
-let express = require('express');
-let path = require('path');
-let cookieParser = require('cookie-parser');
-let logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const session = require('express-session');
+const indexRouter = require('./routes/index');
+const apiRouter = require('./routes/api');
+const registerRouter = require('./routes/register');
 
-let indexRouter = require('./routes/index');
-let apiRouter = require('./routes/api');
-let registerRouter = require('./routes/register');
-
-let app = express();
+const app = express();
+app.use(session({
+  secret:"DvirYanivSecrets",
+  resave: false,
+  saveUninitialized: false,
+  cookie:{secure:true,maxAge: 5*60*60*1000}
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

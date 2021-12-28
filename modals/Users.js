@@ -11,5 +11,6 @@ module.exports = class User{
     getLastName(){return this.lastName;}
     getEmail(){return this.Email;}
     save(){UserData.push(this);}
+    validatePassword(other){return other === this.Password;}
     static fetchAllUsers(){return UserData;}
 }
