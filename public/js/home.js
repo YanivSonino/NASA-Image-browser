@@ -1,4 +1,4 @@
-const APIKEY = "DCEmPiFAakpWWrNly0x6lKpxYBaW5zXVO7ryD5Qe"
+const APIKEY = "DCEmPiFAakpWWrNly0x6lKpxYBaW5zXVO7ryD5Qe";
 
 class Mission{
     constructor(rover) {
@@ -74,6 +74,7 @@ let ValidationModule = ()=> {
     //The function get the requested mission and the requested date and check if the date is a valid date
     //and checks if the requested date is valid for the requested rover.
     function validateUserDateInput(mission, date){
+        date = date.trim();
         let status = {
             valid: true,
             massage: "",
@@ -247,6 +248,7 @@ let ValidationModule = ()=> {
     function onSubmit(event){
         event.preventDefault();
 
+
         //Gets the relevant search fields.
         let date = document.getElementById("Date");
         let rover = document.getElementById("Rover");
@@ -261,7 +263,7 @@ let ValidationModule = ()=> {
 
         //Sends GET request to NASA's server for getting all the photo for the requested search values.
         let url = `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover.value}/photos?${validatorRes.dateKind}=${date.value}&camera=${camera.value}&api_key=${APIKEY}`
-        document.getElementById("Results").innerHTML = "<div class='col-4 text-center'><img class='float d-block w-25' src='images/loading-buffering.gif'></div>";
+        document.getElementById("Results").innerHTML = "<div class='col-4 text-center'><img alt='loading buffer' class='float d-block w-25' src='images/loading-buffering.gif'></div>";
         fetch(url)
             .then(status)
             .then(json)
@@ -308,7 +310,7 @@ let ValidationModule = ()=> {
         imageContainer.setAttribute("class", "border mt-3 col-md-4");
 
         imageContainer.innerHTML = `
-                <img class="w-100" src="${pic.img_src}">
+                <img alt="${pic.rover.name} image of camera ${pic.camera.name}" class="w-100" src="${pic.img_src}">
                 <h5>
                     Earth date: ${pic.earth_date} <br>
                     Sol: ${pic.sol} <br class="p-1">
@@ -390,7 +392,21 @@ let ValidationModule = ()=> {
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("SearchForm").addEventListener("submit",onSubmit);
         document.getElementById("SearchForm").addEventListener("reset",()=>{
+            let date = document.getElementById("Date");
+            let rover = document.getElementById("Rover");
+            let camera = document.getElementById("Camera");
+
+            //Initialize all the error message of each field of the form.
+            for(let value of [date,rover,camera]) {
+                if (value.classList.contains("is-invalid")) {
+                    value.classList.remove("is-invalid");
+                    value.parentElement.lastChild.remove();
+                }
+            }
             document.getElementById("Results").innerHTML = "";
+            document.getElementById("SearchForm").reset();
+
+
         });
         document.getElementById("StartSlide").addEventListener("click", ()=>{
             if(saveImages.size > 0) {

@@ -21,7 +21,20 @@
                     alert("The connection with server has been lost, please check your network connection or try again later")
                 })
         })
+        document.getElementById('form').addEventListener('reset', (event) =>{
+            let name = document.getElementById("FirstName");
+            let lastName = document.getElementById("LastName");
+            let Email = document.getElementById("Email");
+
+            for(let value of [name,lastName,Email]){
+                if (value.classList.contains("is-invalid")) {
+                    value.classList.remove("is-invalid");
+                }
+            }
+            document.getElementById('form').reset();
+        })
     })
+
 
     //Checks response status code.
     function status(res) {
@@ -35,6 +48,7 @@
     function json(res){
         return res.json();
     }
+
 
 })()
 

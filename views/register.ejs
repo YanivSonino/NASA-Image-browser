@@ -18,11 +18,11 @@
                 <form id="form" action="/register/password" method="post" class="needs-validation">
                     <div class="form-group mb-3">
                         <label for="FirstName" class="form-label">Name:</label>
-                        <input  type="text" class="form-control" id="FirstName" name="FirstName" pattern="[A-Za-z]+" required>
+                        <input  type="text" class="form-control" id="FirstName" name="FirstName" pattern="(\s*[A-Za-z]+\s*)*" required>
                     </div>
                     <div class="form-group mb-3">
                         <label for="LastName" class="form-label">Last Name:</label>
-                        <input type="text" class="form-control" id="LastName" name="LastName" pattern="[A-Za-z]+" required>
+                        <input type="text" class="form-control" id="LastName" name="LastName" pattern="(\s*[A-Za-z]+\s*)*" required>
                     </div>
                     <div class="form-group mb-3">
                         <label for="Email" class="form-label" >Email:</label>

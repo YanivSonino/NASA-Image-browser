@@ -11,7 +11,7 @@
             confirmPassword.classList.remove('is-invalid');
 
             //Checks that the password and the confirm password are equals validation.
-            if(password.value !== confirmPassword.value){
+            if(password.value.trim() !== confirmPassword.value.trim()){
                 confirmPassword.classList.add('is-invalid');
                 return;
             }
@@ -31,6 +31,18 @@
                 .catch(err => {
                     alert("The connection with server has been lost, please check your network connection or try again later");
                 })
+
+        })
+        document.getElementById('form').addEventListener('reset', (event) =>{
+            let password = document.getElementById("Password");
+            let rePassword = document.getElementById("ConfirmPassword");
+
+            for(let value of [password,rePassword]){
+                if (value.classList.contains("is-invalid")) {
+                    value.classList.remove("is-invalid");
+                }
+            }
+            document.getElementById('form').reset();
         })
     })
 
