@@ -2,6 +2,7 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const Cookies = require('cookies');
 const logger = require('morgan');
 const session = require('express-session');
 const indexRouter = require('./routes/index');
@@ -9,12 +10,17 @@ const apiRouter = require('./routes/api');
 const registerRouter = require('./routes/register');
 
 const app = express();
+const store = new session.MemoryStore();
+
 app.use(session({
   secret:"DvirYanivSecrets",
   resave: false,
   saveUninitialized: false,
-  cookie:{secure:true,maxAge: 5*60*60*1000}
+  cookie:{maxAge: 30000},
+  store,
+  expires: Date.now() + 30000
 }));
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
