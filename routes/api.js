@@ -1,13 +1,16 @@
 let express = require('express');
 let router = express.Router();
-const Users = require('../modals/Users');
+const db = require("../models");
 
-router.get('/email/:email', ((req, res, next) => {
+router.get('/email/:email', (async (req, res, next) => {
     //Checks if the received email is already exist.
-    if(Users.fetchAllUsers().some(user => req.params.email === user.getEmail())){
-        res.send({code: false, message: "Email is already exist", url: "http://localhost:3000/register"});
+    console.log(req.params.email)
+    let user = await db.User.findOne({where: {email: req.params.email}})
+    if (!user) {
+        res.send({code: true, message: 'Ok'})
+    } else {
+        res.send({code: false, message: "Email is already exist", url: "http://localhost:3000/register"})
     }
-    res.send({code: true, message: 'Ok'})
 }))
 
 

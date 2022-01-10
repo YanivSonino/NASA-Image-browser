@@ -48,7 +48,5 @@
     function json(res){
         return res.json();
     }
-
-
 })()
 

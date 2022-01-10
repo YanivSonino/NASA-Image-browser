@@ -1,28 +1,40 @@
-let express = require('express');
-let router = express.Router();
-
-const Users = require('../modals/Users');
+const express = require('express');
+const router = express.Router();
+const db = require('../models')
 
 const Cookies = require('cookies');
 const keys = ['keyboard cat'];
 
-
-let yaniv = new Users("Yaniv","Sonino","yanivsoninno@gmail.com","123456789");
-yaniv.save();
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-
-  const cookies = new Cookies(req, res, {keys: keys});
-  const Uid = cookies.get('connect.sid', {signed: false});
-  console.log(Uid);
-  console.log(req.sessionStore.sessions)
-
-  if(!Uid){
+  if(!req.session.isAuth){
     res.render('landing', {title: "Mars Images Browser", jsPath: "/js/landingPage.js"});
+    return;
   }
   res.render('home', {title: "Home Page", jsPath: "/js/home.js" , userName: 's'})
+});
 
+router.get('/create', function(req, res, next) {
+  let email = "Email"
+  let password = "Password";
+  let firstName = "First Name";
+  let lastName = "Last Name"
+  return db.User.create({email, password, firstName, lastName})
+      .then(user => res.send("Created"))
+      .catch(err => res.send(err))
+});
+
+router.get('/all', function(req, res, next) {
+  return db.User.findAll()
+      .then((allData) =>
+      {
+        res.send(allData)
+      })
+      .catch((err) => {
+        console.log('error', JSON.stringify(err))
+        return res.send('error')
+      });
 });
 
 router.post('/logout', (req,res,next)=>{
@@ -33,7 +45,6 @@ router.post('/logout', (req,res,next)=>{
   });
 })
 
-
 router.post('/', ((req, res, next) =>{
   const cookies = new Cookies(req, res, {keys: keys});
   const RegisterTime = cookies.get('RegisterTime', {signed: false});
@@ -43,31 +54,29 @@ router.post('/', ((req, res, next) =>{
     res.render('register', {title: "Mars Images Browser", jsPath: "/js/register.js", message:"You running out of time, Try Again.",messageType: "error"});
   }
   else{
-    let user = new Users(req.body.FirstName, req.body.LastName, req.body.Email, req.body.Password);
-    user.save();
-    res.render('landing', {title: "Mars Images Browser - Login", jsPath: "/js/landingPage.js", message:"You have been registered successfully", messageType: "success"});
+    let {firstName, lastName, email, password} = req.body
+    db.User.create({firstName, lastName, email, password})
+        .then(user => res.render('landing', {title: "Mars Images Browser - Login", jsPath: "/js/landingPage.js", message:"You have been registered successfully", messageType: "success"}))
+        .catch(err => res.send(err))
   }
 }))
 
-
 router.post('/login',(req, res, next) => {
-  console.log(req.sessionID)
-  console.log(req.sessionStore);
-  let userIndex = Users.fetchAllUsers().findIndex(user => req.body.Email === user.getEmail());
-  if(userIndex < 0 || !Users.fetchAllUsers()[userIndex].validatePassword(req.body.Password)){
-    res.render('landing', {title: "Mars Images Browser - Login", jsPath: "/js/landingPage.js", message:"Incorrect E-mail or password", messageType:"error"});
-  }
-  else {
-    req.session.isAuth = true;
-    req.session.Name = Users.fetchAllUsers()[userIndex].getFirstName();
-    res.redirect('/home')
-  }
+
+  db.User.findOne({where: {email: req.body.Email}})
+      .then((user) => {
+        if(!user) {
+          res.render('landing', {title: "Mars Images Browser - Login", jsPath: "/js/landingPage.js", message:"Incorrect E-mail or password", messageType:"error"});
+        }
+        else{
+          req.session.isAuth = true;
+          res.redirect('/home')
+        }
+      })
 });
+
 router.get('/home',(req, res, next) => {
   res.render('home', {title: "Home Page", jsPath: "/js/home.js" , userName: req.session.Name})
-  setTimeout(()=>{
-    req.sessionStore.destroy(req.sessionID)
-
-  },15000)
 })
+
 module.exports = router;

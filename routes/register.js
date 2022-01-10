@@ -11,6 +11,7 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/password', (req, res, next) => {
+
     const cookies = new Cookies(req, res, {keys: keys});
     //Sets cookie that indicates about the remaining time to finish the register process.
     cookies.set('RegisterTime', Date.now(),{signed: false, maxAge: 60*1000});
