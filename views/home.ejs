@@ -82,8 +82,9 @@
                 <h2 class="rounded bg-dark p-1">Saved Images</h2>
                 <button id="StartSlide" type="button" class="rounded">Start slide show</button>
                 <button id="StopSlide" type="button" class="rounded">Stop slide show</button>
+                <button id="ResetList" type="button" class="rounded">Reset Images List</button>
 
-                <ol id="FavoritesList" class="overflow-auto" style="max-height: 150px;" >
+                <ol id="FavoritesList" class="bg-dark bg-opacity-50 rounded overflow-auto" style="max-height: 200px; " >
                 </ol>
             </div>
         </div>
@@ -124,7 +125,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="savedImageModalLabel">Creators Details</h5>
+                <h5 class="modal-title" id="savedImageModalLabel">Image Saved</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -138,19 +139,21 @@
         </div>
     </div>
 </div>
-<div id="myModal" class="modal show" tabindex="-1">
+
+<div id="DeleteModal" class="modal show" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
+                <h5 class="modal-title">Delete</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Modal body text goes here.</p>
+                <p>Are sure you want to delete this image?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <input id="hiddenID" type="hidden" value="">
+                <button id="Delete" type="button" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Back</button>
             </div>
         </div>
     </div>

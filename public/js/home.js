@@ -128,7 +128,6 @@ let ValidationModule = ()=> {
         }
         return status;
     }
-
     //Function that checks validation for the requested rover.
     function validateUserMissionInput(mission, roverName){
 
@@ -201,7 +200,7 @@ let ValidationModule = ()=> {
 (function () {
 
     let missions = [];
-    let saveImages = new Set();
+    let saveImagesID = new Set();
 
     //Sent first Get request to NASA server to get the available missions and cameras.
     /**
@@ -235,8 +234,24 @@ let ValidationModule = ()=> {
             }
         })
         .catch(err => {
-            alert("The connection with the NASA server has been lost, please check your network connection or try again later")
             document.querySelector("body").innerHTML = `<h1 class="text-center">404<br> Page Not Found</h1>`;
+            alert("The connection with the NASA server has been lost, please check your network connection or try again later");
+        })
+
+    fetch('/api/getImages')
+        .then(status)
+        .then(json)
+        .then(res => {
+            res.images.forEach(image => {
+                image.id = image.imageID;
+                image.camera = {name: image.camera};
+                addImageToFavorite(image);
+            })
+
+        })
+        .catch(err => {
+            document.querySelector("body").innerHTML = `<h1 class="text-center">404<br> Page Not Found</h1>`;
+            alert("The connection with the NASA server has been lost, please check your network connection or try again later");
         })
 
     /**
@@ -292,6 +307,7 @@ let ValidationModule = ()=> {
 
     //Checks response status code.
     function status(res) {
+        console.log(res.status);
         if (res.status >= 200 && res.status <= 300) {
             return Promise.resolve(res);
         } else
@@ -324,50 +340,85 @@ let ValidationModule = ()=> {
             <a id="full_size" class="text-decoration-none link-light btn-secondary btn-lg rounded m-1"
                href='${pic.img_src}' target="_blank">Full size</a>`
 
-        //Checks if the current image is already saved in the favorites list.
-        if(saveImages.has(pic.id)) {
-            imageContainer.innerHTML += `
-            <button type="button" class="btn-primary btn-lg rounded m-1" data-bs-toggle="modal" data-bs-target="#savedImageModal">
-                        Save
-            </button>`
-        }
-        else {
-            //Build a save button for saving the image in the favorites list.
-            let SaveButton = document.createElement("button");
-            SaveButton.setAttribute("type", "button");
-            SaveButton.setAttribute("class", "btn-primary btn-lg rounded m-1");
-            SaveButton.innerText = "Save";
-            SaveButton.addEventListener("click", (event) => {
-                saveImage(event, pic)
-            })
-            imageContainer.appendChild(SaveButton);
-        }
+        //Build a save button for saving the image in the favorites list.
+        let SaveButton = document.createElement("button");
+        SaveButton.setAttribute("type", "button");
+        SaveButton.setAttribute("class", "btn-primary btn-lg rounded m-1");
+        SaveButton.innerText = "Save";
+
+        SaveButton.addEventListener("click", (event) => {
+            saveImage(event, pic)
+        })
+        imageContainer.appendChild(SaveButton);
+
         return imageContainer;
     }
 
-    //Saved the request image and it details in the favorites list and add the image to the carousel.
+    //Saved the request image, and it details in the favorites list and add the image to the carousel.
     function saveImage(event, pic) {
+        let params = {
+            method: "POST",
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                imageID: pic.id,
+                img_src: pic.img_src,
+                sol: pic.sol,
+                earth_date: pic.earth_date,
+                camera: pic.camera.name
+            })
+        }
 
-        saveImages.add(pic.id);
+        fetch("api/save", params)
+            .then(status)
+            .then(json)
+            .then(res =>{
+                if(res.code){
+                    addImageToFavorite(pic)
+                }
+                else{
+                    let alreadySavedModal = new bootstrap.Modal(document.getElementById("savedImageModal"));
+                    alreadySavedModal.show()
+                }
+            })
+            .catch(err => {console.log(err)})
+    }
 
+    function addImageToFavorite(pic){
+        saveImagesID.add(pic.id);
         let imageList = document.getElementById("FavoritesList");
-
         let line = document.createElement("li");
-        line.innerHTML = `
-                <a href="${pic.img_src}" target="_blank">Image ID: ${pic.id}</a>
-                <p>Earth date: ${pic.earth_date}, Sol: ${pic.sol}, Camera: ${pic.camera.name}</p>`
+        line.setAttribute("id", `${pic.id}`);
 
-        imageList.appendChild(line);
+        let link = document.createElement("a")
+        link.setAttribute("href",`${pic.img_src}`);
+        link.setAttribute("target","_blank");
+        link.innerText = `Image ID: ${pic.id}`
+        line.appendChild(link);
 
+        let deleteButton = document.createElement("button");
+        deleteButton.setAttribute("type", "button");
+        deleteButton.setAttribute("class", "bg-danger rounded");
+
+        deleteButton.innerText = `X`;
+
+        deleteButton.addEventListener("click", function listener(event){
+            document.getElementById("hiddenID").value = `${pic.id}`;
+            deleteButton.setAttribute("data-bs-toggle", "modal");
+            deleteButton.setAttribute("data-bs-target", "#DeleteModal");
+            deleteButton.removeEventListener("click", listener);
+            deleteButton.click();
+        })
+
+        line.appendChild(deleteButton);
+
+        let details = document.createElement("p");
+        details.innerText = `Earth date: ${pic.earth_date}, Sol: ${pic.sol}, Camera: ${pic.camera.name}`
+        line.appendChild(details);
+
+        imageList.appendChild(line)
         addToCarousel(pic);
-
-        //Change the save button to modal button that indicate about already saved image.
-        let parent = event.target.parentElement;
-        parent.removeChild(event.target);
-        parent.innerHTML += `
-            <button type="button" class="btn-primary btn-lg rounded m-1" data-bs-toggle="modal" data-bs-target="#savedImageModal">
-                        Save
-            </button>`
     }
 
     //Function that add image to the carousel.
@@ -389,6 +440,40 @@ let ValidationModule = ()=> {
             carousel.firstElementChild.classList.add("active");
     }
 
+    function deleteImage(event){
+        const imageID = document.getElementById("hiddenID").value;
+        fetch(`api/delete/${imageID}`, {method: "DELETE"})
+            .then(status)
+            .then(json)
+            .then(res=>{
+                if(res){
+                    const imageBlock = document.getElementById(imageID);
+                    imageBlock.parentElement.removeChild(imageBlock);
+                }
+            })
+            .catch(err=>{
+                document.querySelector("body").innerHTML = `<h1 class="text-center">404<br> Page Not Found</h1>`;
+                alert("The connection with the NASA server has been lost, please check your network connection or try again later");
+            })
+    }
+
+    function resetList(){
+        fetch('api/reset')
+            .then(status)
+            .then(json)
+            .then(res=>{
+                if(res){
+                    document.getElementById("FavoritesList").innerHTML = "";
+                    saveImagesID.clear();
+                    alert("Favorite list has been reset")
+                }
+            })
+            .catch(err => {
+                document.querySelector("body").innerHTML = `<h1 class="text-center">404<br> Page Not Found</h1>`;
+                alert("The connection with the NASA server has been lost, please check your network connection or try again later");
+            })
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("SearchForm").addEventListener("submit",onSubmit);
         document.getElementById("SearchForm").addEventListener("reset",()=>{
@@ -405,16 +490,16 @@ let ValidationModule = ()=> {
             }
             document.getElementById("Results").innerHTML = "";
             document.getElementById("SearchForm").reset();
-
-
         });
         document.getElementById("StartSlide").addEventListener("click", ()=>{
-            if(saveImages.size > 0) {
+            if(saveImagesID.size > 0) {
                 document.getElementById("CarouselContainer").classList.remove("d-none");
             }
         });
         document.getElementById("StopSlide").addEventListener("click", ()=>{
             document.getElementById("CarouselContainer").classList.add("d-none");
-        })
+        });
+        document.getElementById("ResetList").addEventListener("click", resetList);
+        document.getElementById("Delete").addEventListener("click", deleteImage);
     });
 })()
