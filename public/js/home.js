@@ -283,12 +283,14 @@ let ValidationModule = ()=> {
                 image.camera = {name: image.camera};
                 addImageToFavorite(image);
             })
+            document.getElementById('LoadingBuffer').classList.add('d-none')
 
         })
         .catch(err => {
             document.querySelector("body").innerHTML = `<h1 class="text-center">404<br> Page Not Found</h1>`;
             alert("The connection with the NASA server has been lost, please check your network connection or try again later");
         })
+
 
     /**
      * @param res.photos   Information about the object's members.
@@ -314,7 +316,7 @@ let ValidationModule = ()=> {
 
         //Sends GET request to NASA's server for getting all the photo for the requested search values.
         let url = `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover.value}/photos?${validatorRes.dateKind}=${date.value}&camera=${camera.value}&api_key=${APIKEY}`
-        document.getElementById("Results").innerHTML = "<div class='col-4 text-center'><img alt='loading buffer' class='float d-block w-25' src='images/loading-buffering.gif'></div>";
+        document.getElementById("Results").innerHTML = "<div class='col-4 text-center'><img alt='loading buffer' class='float d-block w-100' src='images/loading-buffering.gif'></div>";
         fetch(url)
             .then(status)
             .then(json)
@@ -494,14 +496,17 @@ let ValidationModule = ()=> {
     }
 
     function resetList(){
-        fetch('api/reset')
+        fetch('api/reset',{method:'DELETE'})
             .then(status)
             .then(json)
             .then(res=>{
-                if(res){
+                if(res.code){
                     document.getElementById("FavoritesList").innerHTML = "";
                     saveImagesID.clear();
                     alert("Favorite list has been reset")
+                }
+                else{
+                    alert("Favorite list is already clear")
                 }
             })
             .catch(err => {

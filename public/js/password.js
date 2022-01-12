@@ -21,7 +21,7 @@
                 .then(json)
                 .then(res => {
                     // Checks if the email is already caught.
-                    if(res.code === false){
+                    if(!res.code){
                         alert("Something went wrong");
                         window.location.href = res.url;
                         return;

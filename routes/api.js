@@ -1,5 +1,5 @@
-let express = require('express');
-let router = express.Router();
+const express = require('express');
+const router = express.Router();
 const apiController = require('../Controller/apiController')
 
 
@@ -12,6 +12,5 @@ router.delete('/delete/:imageID', apiController.api_delete_image)
 router.get('/getImages', apiController.api_user_images)
 
 router.delete('/reset', apiController.api_reset_images)
-
 
 module.exports = router;
