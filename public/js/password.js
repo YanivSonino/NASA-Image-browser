@@ -31,7 +31,6 @@
                 .catch(err => {
                     alert("The connection with server has been lost, please check your network connection or try again later");
                 })
-
         })
         document.getElementById('form').addEventListener('reset', (event) =>{
             let password = document.getElementById("Password");
