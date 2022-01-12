@@ -45,7 +45,11 @@
         })
     })
 
-    //Checks response status code.
+    /**
+     * Checks response status code.
+     * @param res
+     * @returns {Promise<never>|Promise<unknown>}
+     */
     function status(res) {
         if (res.status >= 200 && res.status <= 300) {
             return Promise.resolve(res);
@@ -53,7 +57,11 @@
             return  Promise.reject("Error");
     }
 
-    //Casting the promise to json.
+    /**
+     * Casting the promise to json.
+     * @param res
+     * @returns {*}
+     */
     function json(res){
         return res.json();
     }

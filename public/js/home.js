@@ -30,7 +30,15 @@ class Camera{
 
 let ValidationModule = ()=> {
 
-    //Function that checks all the necessary validation for user inputs.
+    /**
+     * Function that checks all the necessary validation for user inputs.
+     * @param missions - All missions of the current rover
+     * @param date - date of current rover
+     * @param rover - current rover
+     * @param camera - current camera
+     * @returns {{valid: boolean, dateKind: string}}
+     * indicates if user input is validate and give the kind of the date
+     */
     function validate(missions, date, rover, camera){
         let status = {
             valid: true,
@@ -66,13 +74,23 @@ let ValidationModule = ()=> {
         return status;
     }
 
+    /**
+     * @param massage - message with error to user
+     * @returns {string}
+     */
     function errorProvider(massage){
         return `
         <div class="text-danger">${massage}</div>`;
     }
 
-    //The function get the requested mission and the requested date and check if the date is a valid date
-    //and checks if the requested date is valid for the requested rover.
+
+    /**
+     * The function get the requested mission and the requested date and check if the date is a valid date
+     * and checks if the requested date is valid for the requested rover.
+     * @param mission - mission that choose by the user
+     * @param date - date that choose by the user
+     * @returns {{valid: boolean, dateKind: string, massage: string}}
+     */
     function validateUserDateInput(mission, date){
         date = date.trim();
         let status = {
@@ -128,7 +146,13 @@ let ValidationModule = ()=> {
         }
         return status;
     }
-    //Function that checks validation for the requested rover.
+
+    /**
+     * Function that checks validation for the requested rover.
+     * @param mission - current mission
+     * @param roverName - current rover name
+     * @returns {{valid: boolean, massage: string}}
+     */
     function validateUserMissionInput(mission, roverName){
 
         let status = {
@@ -143,7 +167,13 @@ let ValidationModule = ()=> {
 
         return status;
     }
-    //Function that checks validation for the requested camera.
+
+    /**
+     * Function that checks validation for the requested camera.
+     * @param mission - mission that choose by the user
+     * @param camera - camera that choose by the user
+     * @returns {{valid: boolean, massage: string}}
+     */
     function validateUserCameraInput(mission, camera){
         let status = {
             valid: true,
@@ -168,7 +198,13 @@ let ValidationModule = ()=> {
         status.massage = `Camera ${camera} is not part of the rover ${mission.getName()}`;
         return status;
     }
-    //Function that checks validation for date of kind earth date.
+
+    /**
+     * Function that checks validation for date of kind earth date.
+     * @param mission - mission that choose by the user
+     * @param date - date that choose by the user
+     * @returns {string|string}
+     */
     function validateEarthDate(mission, date){
         //Split the input date, max date and landing date to year, month and day and casting to integers.
         let parseToInt = item => parseInt(item, 10);
