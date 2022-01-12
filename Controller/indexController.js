@@ -6,7 +6,7 @@ const keys = ['keyboard cat'];
  *otherwise he will lang in landing page for registration*/
 exports.user_landing = (req, res, next) =>{
     if(!req.session.isAuth){
-        res.render('landing', {title: "Mars Images Browser", jsPath: "/js/landingPage.js"});
+        res.render('landing', {title: "Mars Images Browser", jsPath: ""});
         return;
     }
     res.redirect('/home');
@@ -34,10 +34,10 @@ exports.user_finish_register = (req, res, next) =>{
 /*User is willing to login, if he successfully logged in he will move to homepage,
  *otherwise he will go back to landing page to retry login.*/
 exports.user_login = (req, res) => {
-    db.User.findOne({where: {email: req.body.Email}})
+    db.User.findOne({where: {email: req.body.Email,password: req.body.Password}})
         .then((user) => {
             if(!user) {
-                res.render('landing', {title: "Mars Images Browser - Login", jsPath: "/js/landingPage.js", message:"Incorrect E-mail or password", messageType:"error"});
+                res.render('landing', {title: "Mars Images Browser - Login", jsPath: "", message:"Incorrect E-mail or password", messageType:"error"});
             }
             else{
                 req.session.isAuth = true;
