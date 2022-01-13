@@ -1,6 +1,4 @@
 const db = require('../models')
-const Cookies = require('cookies');
-const keys = ['keyboard cat'];
 
 /*Checks if user email is exits*/
 exports.api_email_check = async (req, res, next) => {
@@ -66,3 +64,13 @@ exports.api_reset_images = async (req, res, next) => {
     }
 }
 
+/*Checking if user is authorized to visit the pages.*/
+exports.check_safe_page = (req, res, next) => {
+    if(req.session.isAuth){
+        next()
+    }
+    else{
+        req.method = "GET";
+        res.redirect("http://localhost:3000");
+    }
+}

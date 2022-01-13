@@ -1,4 +1,3 @@
-
 /*Checking if user is authorized to visit the pages.*/
 exports.check_safe_page = (req, res, next) => {
     if(req.session.isAuth){
@@ -6,7 +5,7 @@ exports.check_safe_page = (req, res, next) => {
     }
     else{
         req.method = "GET";
-        res.status(404).redirect("http://localhost:3000");
+        res.redirect("http://localhost:3000");
     }
 }
 

@@ -26,7 +26,7 @@ exports.user_finish_register = (req, res, next) =>{
     else{
         let {firstName, lastName, email, password} = req.body
         db.User.create({firstName, lastName, email, password})
-            .then(user => res.render('landing', {title: "Mars Images Browser - Login", jsPath: "/js/landingPage.js", message:"You have been registered successfully", messageType: "success"}))
+            .then(user => res.render('landing', {title: "Mars Images Browser - Login", jsPath: "", message:"You have been registered successfully", messageType: "success"}))
             .catch(err => res.send(err))
     }
 }

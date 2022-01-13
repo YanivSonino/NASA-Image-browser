@@ -284,16 +284,13 @@ let ValidationModule = ()=> {
                 addImageToFavorite(image);
             })
             document.getElementById('LoadingBuffer').classList.add('d-none')
-
         })
         .catch(err => {
-            document.querySelector("body").innerHTML = `<h1 class="text-center">404<br> Page Not Found</h1>`;
-            alert("The connection with the NASA server has been lost, please check your network connection or try again later");
+            window.location.replace('http://localhost:3000');
+            alert(err.message);
         })
 
-
     /**
-     * @param res.photos   Information about the object's members.
      * @param event
      */
 
@@ -316,14 +313,13 @@ let ValidationModule = ()=> {
 
         //Sends GET request to NASA's server for getting all the photo for the requested search values.
         let url = `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover.value}/photos?${validatorRes.dateKind}=${date.value}&camera=${camera.value}&api_key=${APIKEY}`
-        document.getElementById("Results").innerHTML = "<div class='col-4 text-center'><img alt='loading buffer' class='float d-block w-100' src='images/loading-buffering.gif'></div>";
+        let Results = document.getElementById("Results");
+        Results.innerHTML = "<div id='ImageBuffer' class='col-4 text-center'><img alt='loading buffer' class='float d-block w-100' src='images/loading-buffering.gif'></div>";
+
         fetch(url)
             .then(status)
             .then(json)
             .then(res =>{
-                let Results = document.getElementById("Results");
-                Results.innerHTML = ""
-
                 //Indicates no images found.
                 if(res.photos.length === 0){
                     Results.innerHTML = `
@@ -336,20 +332,22 @@ let ValidationModule = ()=> {
                 res.photos.forEach(pic=>{
                     Results.appendChild(NasaImageComponent(pic));
                 })
+
+                document.getElementById("ImageBuffer").classList.add("d-none");
             })
             .catch(err => {
                 alert("The connection with the NASA's server has been lost, please check your network connection or try again later")
-                document.getElementById("Results").innerHTML = "";
+                Results.innerHTML = "";
             })
     }
 
     //Checks response status code.
     function status(res) {
-        console.log(res.status);
         if (res.status >= 200 && res.status <= 300) {
             return Promise.resolve(res);
-        } else
-            return  Promise.reject("Error");
+        } else {
+            return  Promise.reject(res.statusText);
+        }
     }
 
     //Casting the promise to json.
@@ -413,14 +411,16 @@ let ValidationModule = ()=> {
             .then(json)
             .then(res =>{
                 if(res.code){
-                    addImageToFavorite(pic)
+                    addImageToFavorite(pic);
                 }
                 else{
                     let alreadySavedModal = new bootstrap.Modal(document.getElementById("savedImageModal"));
-                    alreadySavedModal.show()
+                    alreadySavedModal.show();
                 }
             })
-            .catch(err => {console.log(err)})
+            .catch(err => {
+                window.location.replace('http://localhost:3000');
+            })
     }
 
     function addImageToFavorite(pic){
@@ -465,7 +465,7 @@ let ValidationModule = ()=> {
 
         //Build a carousel item for the requested image.
         carousel.innerHTML += `
-                    <div class="carousel-item">
+                    <div id="carousel${pic.id}" class="carousel-item">
                         <img src="${pic.img_src}" class="d-block w-100" alt="...">
                         <div class="carousel-caption d-md-block">
                             <h5>${pic.camera.name}</h5>
@@ -478,6 +478,25 @@ let ValidationModule = ()=> {
             carousel.firstElementChild.classList.add("active");
     }
 
+    function removeFromCarousel(imageID){
+        let carousel = document.getElementById("Carousel");
+        const imageCarousel = document.getElementById(`carousel${imageID}`);
+
+        if(imageCarousel.classList.contains("active")) {
+            imageCarousel.parentElement.removeChild(imageCarousel);
+            if(carousel.firstElementChild)
+                carousel.firstElementChild.setAttribute("class", "carousel-item active");
+        }
+        else {
+            imageCarousel.parentElement.removeChild(imageCarousel);
+
+        }
+
+        if(!carousel.firstElementChild){
+            document.getElementById("CarouselContainer").classList.add("d-none");
+        }
+    }
+
     function deleteImage(event){
         const imageID = document.getElementById("hiddenID").value;
         fetch(`api/delete/${imageID}`, {method: "DELETE"})
@@ -487,11 +506,13 @@ let ValidationModule = ()=> {
                 if(res){
                     const imageBlock = document.getElementById(imageID);
                     imageBlock.parentElement.removeChild(imageBlock);
+                    saveImagesID.delete(imageID);
+                    removeFromCarousel(imageID);
                 }
             })
-            .catch(err=>{
-                document.querySelector("body").innerHTML = `<h1 class="text-center">404<br> Page Not Found</h1>`;
-                alert("The connection with the NASA server has been lost, please check your network connection or try again later");
+            .catch(err => {
+                alert(err);
+                window.location.replace('http://localhost:3000');
             })
     }
 
@@ -510,8 +531,8 @@ let ValidationModule = ()=> {
                 }
             })
             .catch(err => {
-                document.querySelector("body").innerHTML = `<h1 class="text-center">404<br> Page Not Found</h1>`;
-                alert("The connection with the NASA server has been lost, please check your network connection or try again later");
+                alert(err);
+                window.location.replace('http://localhost:3000');
             })
     }
 

@@ -5,6 +5,8 @@ const apiController = require('../Controller/apiController')
 
 router.get('/email/:email', apiController.api_email_check)
 
+router.use(apiController.check_safe_page);
+
 router.post('/save', apiController.api_find_or_create_img)
 
 router.delete('/delete/:imageID', apiController.api_delete_image)
