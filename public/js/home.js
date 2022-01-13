@@ -326,6 +326,7 @@ let ValidationModule = ()=> {
                     <div class="alert alert-warning" role="alert">
                       No images found!
                     </div>`
+                    return;
                 }
 
                 //Build NasaImageComponent for each image was found in NASA's server.
@@ -503,10 +504,10 @@ let ValidationModule = ()=> {
             .then(status)
             .then(json)
             .then(res=>{
-                if(res){
+                if(res.code){
                     const imageBlock = document.getElementById(imageID);
                     imageBlock.parentElement.removeChild(imageBlock);
-                    saveImagesID.delete(imageID);
+                    saveImagesID.delete(parseInt(imageID));
                     removeFromCarousel(imageID);
                 }
             })
